@@ -11,7 +11,6 @@ app = Flask(__name__)
 line_bot_api = LineBotApi('你的 access_token')
 handler = WebhookHandler('你的 channel_secret')
 
-# 監聽所有來自 /callback 的 Post Request
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
@@ -65,9 +64,11 @@ def handle_message(event):
                 '----------\n'
                 '•格式\n'
                 '->格式範例。\n'
-                '•統計\n'
+                '•人員統計\n'
                 '->顯示完成回報的人員。\n'
-                '•輸出\n'
+                '•餐點\n'
+                '->顯示完成回報的餐。\n'
+                '•輸出全部\n'
                 '->輸出所有回覆，並清空回報紀錄。\n'
                 '•清空\n'
                 '->可手動清空Data，除錯用。\n'
@@ -92,6 +93,17 @@ def handle_message(event):
                 LineMessage = '錯誤原因: '+str(err)
             else:
                 reportData[groupID].clear()
+
+        elif '餐點' in receivedmsg and len(receivedmsg)==2:
+            try:
+                LineMessage = '餐點總共有：\n'
+                i = 1
+                for data in [reportData[groupID][name] for name in sorted(reportData[groupID].keys())]:
+                    data = data.split("：")
+                    LineMessage = LineMessage + str(i) + '. '+ data[2]+'\n'
+                    i += 1
+            except BaseException as err:
+                LineMessage = '錯誤原因: '+str(err)
 
         elif '格式' in receivedmsg and len(receivedmsg)==2:
             LineMessage = '姓名：\n餐點：\n'
