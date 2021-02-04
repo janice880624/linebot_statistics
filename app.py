@@ -8,7 +8,8 @@ import os
 app = Flask(__name__)
 
 # Channel Access Token
-line_bot_api = LineBotApi('你的 access_token')
+line_bot_api = LineBo
+tApi('你的 access_token')
 handler = WebhookHandler('你的 channel_secret')
 
 @app.route("/callback", methods=['POST'])
@@ -98,9 +99,20 @@ def handle_message(event):
             try:
                 LineMessage = '餐點總共有：\n'
                 i = 1
+                food_dict = {}
                 for data in [reportData[groupID][name] for name in sorted(reportData[groupID].keys())]:
+#                     data = data.split("：")
                     data = data.split("：")
-                    LineMessage = LineMessage + str(i) + '. '+ data[2]+'\n'
+
+                    if data[2] not in food_dict.keys():
+                        food_dict.setdefault(data[2],1)
+                    else:
+                        count = food_dict[data[2]] + 1
+                        food_dict[data[2]] = count
+
+                for j in food_dict.keys():
+                    food_count = food_dict[j]
+                    LineMessage = LineMessage + str(i) + '. '+ j + '總共'+str(food_count) +'份\n'
                     i += 1
             except BaseException as err:
                 LineMessage = '錯誤原因: '+str(err)
