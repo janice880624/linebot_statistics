@@ -8,9 +8,8 @@ import os
 app = Flask(__name__)
 
 # Channel Access Token
-line_bot_api = LineBo
-tApi('你的 access_token')
-handler = WebhookHandler('你的 channel_secret')
+line_bot_api = LineBotApi('Yz/a0h8RwPd4UVcKCh2JtZ3YS14oOGig98HfFu9bMbmUkTdLCeMUAaYHAHyl3khJyLNl7aCpKWCK7yo4Q4tMn4oKGhQmoUhilm7s2wO38s7GlV8bGccZWT1c95zfAe0a9lNhluK3opvEqZ1R/4Gx6gdB04t89/1O/w1cDnyilFU=')
+handler = WebhookHandler('8993ebca810a9e844ec90d17f13d0c92')
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -33,7 +32,7 @@ def handle_message(event):
         groupID = event.source.group_id
     except:
         message = TextSendMessage(text='我只接收群組內訊息，請先把我邀請到群組!')
-        line_bot_api.reply_message(event.reply_token, message)
+        # line_bot_api.reply_message(event.reply_token, message)
     else:
         if not reportData.get(groupID):
             reportData[groupID]={}
@@ -73,6 +72,8 @@ def handle_message(event):
                 '->輸出所有回覆，並清空回報紀錄。\n'
                 '•清空\n'
                 '->可手動清空Data，除錯用。\n'
+                '•機器人掰掰\n'
+                '->覺得我很吵對不對QQ~。\n'
                 '----------\n'
             )
         elif '統計' in receivedmsg and len(receivedmsg)==4:
@@ -123,6 +124,13 @@ def handle_message(event):
         elif '清空' in receivedmsg and len(receivedmsg)==2:
             reportData[groupID].clear()
             LineMessage = '資料已重置!'
+        elif '機器人掰掰' in receivedmsg and len(receivedmsg)==5:
+            try:
+                line_bot_api.leave_group(groupID)
+                LineMessage = '掰掰!'
+            except LineBotApiError as e:
+                # error handle
+                LineMessage = '嘿嘿，我還沒退出喔！'
 
         if LineMessage :
             message = TextSendMessage(text=LineMessage)
